@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>MassTransit.Persistence.MongoDb</id>
+        <version>1.0.0</version>
+        <authors>Jaben Cargman</authors>
+        <owners>CaptiveAire Systems</owners>
+        <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+        <projectUrl>https://github.com/CaptiveAire/MassTransit.Persistence.MongoDb</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>MassTransit Sagas persistence support for NoSQL.</description>
+        <language>en-US</language>
+        <tags>mongodb masstransit</tags>
+        <dependencies>
+            <dependency id="MassTransit" version="2.8.0" />
+            <dependency id="Magnum" version="2.1.0" />
+            <dependency id="mongocsharpdriver" version="1.8.3" />
+            <dependency id="Newtonsoft.Json" version="5.0.8" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="MassTransit.Persistence.MongoDb\bin\Release\MassTransit.Persistence.MongoDb.dll" target="lib\net40\MassTransit.Persistence.MongoDb.dll" />
+    </files>
+</package>

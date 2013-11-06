@@ -12,6 +12,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.Mon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.MongoDb.Tests", "MassTransit.Persistence.MongoDb.Tests\MassTransit.Persistence.MongoDb.Tests.csproj", "{D785211C-8326-4092-A830-C5DEADDF5576}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extras", "Extras", "{D0FD2101-C689-4848-8FB7-69EAD21F240B}"
+	ProjectSection(SolutionItems) = preProject
+		MassTransit.Persistence.MongoDb.nuspec = MassTransit.Persistence.MongoDb.nuspec
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
