@@ -13,32 +13,24 @@
 
 namespace MassTransit.Persistence.MongoDb
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     using MassTransit.Exceptions;
     using MassTransit.Logging;
     using MassTransit.Pipeline;
     using MassTransit.Saga;
     using MassTransit.Util;
-
     using MongoDB.Bson.Serialization;
     using MongoDB.Driver;
     using MongoDB.Driver.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga>
         where TSaga : class, ISaga
     {
-        #region Fields
-
         private readonly MongoDatabase _database;
 
         private ILog _log = Logger.Get(typeof(MongoDbSagaRepository<TSaga>).ToFriendlyName());
-
-        #endregion
-
-        #region Constructors and Destructors
 
         /// <summary> Initializes a new instance of the MongoDbSagaRepository class. </summary>
         /// <exception cref="ArgumentNullException"> Thrown when one or more required arguments are null. </exception>
@@ -61,10 +53,6 @@ namespace MassTransit.Persistence.MongoDb
 
             this._database = database;
         }
-
-        #endregion
-
-        #region Properties
 
         /// <summary> Gets the collection. </summary>
         /// <value> The collection. </value>
@@ -106,10 +94,6 @@ namespace MassTransit.Persistence.MongoDb
 
             return mongoQueryable != null ? mongoQueryable.GetMongoQuery() : null;
         }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         /// <summary> Enumerates find in this collection. </summary>
         /// <param name="filter"> A filter specifying the. </param>
@@ -225,6 +209,10 @@ namespace MassTransit.Persistence.MongoDb
                     {
                         this.Collection.Insert(instance, WriteConcern.Acknowledged);
                     }
+                    else
+                    {
+                        this.Collection.Save(instance, WriteConcern.Acknowledged);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -321,7 +309,5 @@ namespace MassTransit.Persistence.MongoDb
         {
             return this.Queryable.Where(filter.FilterExpression).Select(transformer).ToList();
         }
-
-        #endregion
     }
 }
