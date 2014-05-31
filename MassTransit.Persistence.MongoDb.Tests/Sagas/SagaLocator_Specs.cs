@@ -1,17 +1,13 @@
 ﻿namespace MassTransit.Persistence.MongoDb.Tests.Sagas
 {
+    using Magnum.Extensions;
+    using MassTransit.Context;
+    using MassTransit.Saga;
+    using MongoDB.Driver;
+    using NUnit.Framework;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using Magnum.Extensions;
-
-    using MassTransit.Context;
-    using MassTransit.Saga;
-
-    using MongoDB.Driver;
-
-    using NUnit.Framework;
 
     [TestFixture]
     [Category("Integration")]
@@ -23,7 +19,7 @@
             var mongoClient = new MongoClient();
 
             // requires an instance of mongodb running at localhost
-            this._db = mongoClient.GetServer().GetDatabase("MassTransit.SagaTest");
+            this._db = mongoClient.GetServer().GetDatabase("MassTransit-SagaTest");
             this._sagaId = NewId.NextGuid();
         }
 
