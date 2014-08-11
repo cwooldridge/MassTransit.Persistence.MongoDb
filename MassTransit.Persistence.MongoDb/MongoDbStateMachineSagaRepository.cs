@@ -12,6 +12,8 @@
 // specific language governing permissions and limitations under the License.
 
 using System;
+using System.Linq;
+using Magnum.Extensions;
 using Magnum.StateMachine;
 using MassTransit.Logging;
 using MassTransit.Saga;
@@ -43,8 +45,14 @@ namespace MassTransit.Persistence.MongoDb
 
             BsonClassMap.RegisterClassMap<SagaStateMachine<TSaga>>();
 
-
-            BsonClassMap.RegisterClassMap<TSaga>(
+            if (BsonClassMap.IsClassMapRegistered(typeof (TSaga)))
+            {
+                var map = BsonClassMap.GetRegisteredClassMaps().First(c => c.ClassType == typeof (TSaga)).CastAs<BsonClassMap<TSaga>>();
+                map.UnmapProperty(s => s.Bus);
+            }
+            else
+            {
+                BsonClassMap.RegisterClassMap<TSaga>(
                 cm =>
                 {
                     cm.AutoMap();
@@ -53,6 +61,8 @@ namespace MassTransit.Persistence.MongoDb
                     cm.MapIdProperty(s => s.CorrelationId);
                     cm.UnmapProperty(s => s.Bus);
                 });
+            }
+
         }
     }
 }
