@@ -11,6 +11,10 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 
+using System.Security.Cryptography.X509Certificates;
+using Magnum.StateMachine;
+using MongoDB.Bson.Serialization.Serializers;
+
 namespace MassTransit.Persistence.MongoDb
 {
     using MassTransit.Exceptions;
@@ -30,19 +34,26 @@ namespace MassTransit.Persistence.MongoDb
     {
         private readonly MongoDatabase _database;
 
-        private ILog _log = Logger.Get(typeof(MongoDbSagaRepository<TSaga>).ToFriendlyName());
+        protected ILog Log;
 
         /// <summary> Initializes a new instance of the MongoDbSagaRepository class. </summary>
         /// <exception cref="ArgumentNullException"> Thrown when one or more required arguments are null. </exception>
         /// <param name="database"> The database. </param>
         public MongoDbSagaRepository(MongoDatabase database)
         {
+            if (Log == null)
+            {
+                Log = Logger.Get(typeof(MongoDbSagaRepository<TSaga>).ToFriendlyName());
+            }
+
             if (database == null)
             {
                 throw new ArgumentNullException("database");
             }
 
-            BsonClassMap.RegisterClassMap<TSaga>(
+            if (!BsonClassMap.IsClassMapRegistered(typeof (TSaga)))
+            {
+                BsonClassMap.RegisterClassMap<TSaga>(
                 cm =>
                 {
                     cm.AutoMap();
@@ -50,6 +61,8 @@ namespace MassTransit.Persistence.MongoDb
                     cm.MapIdMember(s => s.CorrelationId);
                     cm.MapIdProperty(s => s.CorrelationId);
                 });
+            }
+
 
             this._database = database;
         }
@@ -141,9 +154,9 @@ namespace MassTransit.Persistence.MongoDb
                 }
                 else
                 {
-                    if (this._log.IsDebugEnabled)
+                    if (this.Log.IsDebugEnabled)
                     {
-                        this._log.DebugFormat(
+                        this.Log.DebugFormat(
                             "SAGA: {0} Ignoring Missing {1} for {2}",
                             typeof(TSaga).ToFriendlyName(),
                             sagaId,
@@ -159,9 +172,9 @@ namespace MassTransit.Persistence.MongoDb
                 }
                 else
                 {
-                    if (this._log.IsDebugEnabled)
+                    if (this.Log.IsDebugEnabled)
                     {
-                        this._log.DebugFormat(
+                        this.Log.DebugFormat(
                             "SAGA: {0} Ignoring Existing {1} for {2}",
                             typeof(TSaga).ToFriendlyName(),
                             sagaId,
@@ -187,9 +200,9 @@ namespace MassTransit.Persistence.MongoDb
         {
             return x =>
             {
-                if (this._log.IsDebugEnabled)
+                if (this.Log.IsDebugEnabled)
                 {
-                    this._log.DebugFormat(
+                    this.Log.DebugFormat(
                         "SAGA: {0} Creating New {1} for {2}",
                         typeof(TSaga).ToFriendlyName(),
                         sagaId,
@@ -218,9 +231,9 @@ namespace MassTransit.Persistence.MongoDb
                 {
                     var sagaException = new SagaException("Create Saga Instance Exception", typeof(TSaga), typeof(TMessage), sagaId, ex);
 
-                    if (this._log.IsErrorEnabled)
+                    if (this.Log.IsErrorEnabled)
                     {
-                        this._log.Error(sagaException);
+                        this.Log.Error(sagaException);
                     }
 
                     throw sagaException;
@@ -249,9 +262,9 @@ namespace MassTransit.Persistence.MongoDb
         {
             return x =>
             {
-                if (this._log.IsDebugEnabled)
+                if (this.Log.IsDebugEnabled)
                 {
-                    this._log.DebugFormat(
+                    this.Log.DebugFormat(
                         "SAGA: {0} Using Existing {1} for {2}",
                         typeof(TSaga).ToFriendlyName(),
                         sagaId,
@@ -273,9 +286,9 @@ namespace MassTransit.Persistence.MongoDb
                 catch (Exception ex)
                 {
                     var sagaException = new SagaException("Existing Saga Instance Exception", typeof(TSaga), typeof(TMessage), sagaId, ex);
-                    if (this._log.IsErrorEnabled)
+                    if (this.Log.IsErrorEnabled)
                     {
-                        this._log.Error(sagaException);
+                        this.Log.Error(sagaException);
                     }
 
                     throw sagaException;
