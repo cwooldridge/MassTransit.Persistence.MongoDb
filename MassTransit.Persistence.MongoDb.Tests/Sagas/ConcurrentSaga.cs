@@ -27,34 +27,38 @@ namespace MassTransit.Persistence.MongoDb.Tests.Sagas
     {
         static ConcurrentSaga()
         {
-            Define(() =>
-            {
-                Initially(
-                    When(Start)
-                        .Then((saga, message) =>
-                        {
-                            Trace.WriteLine("Consuming " + message.GetType());
-                            Thread.Sleep(3000);
-                            saga.Name = message.Name;
-                            saga.Value = message.Value;
-                            Trace.WriteLine("Completed " + message.GetType());
-                        }).TransitionTo(Active));
+            Define(
+                () =>
+                {
+                    Initially(
+                        When(Start)
+                            .Then(
+                                (saga, message) =>
+                                {
+                                    Trace.WriteLine("Consuming " + message.GetType());
+                                    Thread.Sleep(3000);
+                                    saga.Name = message.Name;
+                                    saga.Value = message.Value;
+                                    Trace.WriteLine("Completed " + message.GetType());
+                                }).TransitionTo(Active));
 
-                During(Active,
-                    When(Continue)
-                        .Then((saga, message) =>
-                        {
-                            Trace.WriteLine("Consuming " + message.GetType());
-                            Thread.Sleep(1000);
-                            saga.Value = message.Value;
-                            Trace.WriteLine("Completed " + message.GetType());
-                        }).Complete());
-            });
+                    During(
+                        Active,
+                        When(Continue)
+                            .Then(
+                                (saga, message) =>
+                                {
+                                    Trace.WriteLine("Consuming " + message.GetType());
+                                    Thread.Sleep(1000);
+                                    saga.Value = message.Value;
+                                    Trace.WriteLine("Completed " + message.GetType());
+                                }).Complete());
+                });
         }
 
         public ConcurrentSaga(Guid correlationId)
         {
-            this.CorrelationId = correlationId;
+            CorrelationId = correlationId;
         }
 
         protected ConcurrentSaga()
@@ -62,15 +66,21 @@ namespace MassTransit.Persistence.MongoDb.Tests.Sagas
         }
 
         public static State Initial { get; set; }
+
         public static State Completed { get; set; }
+
         public static State Active { get; set; }
 
         public static Event<StartConcurrentSaga> Start { get; set; }
+
         public static Event<ContinueConcurrentSaga> Continue { get; set; }
 
         public string Name { get; set; }
+
         public int Value { get; set; }
+
         public Guid CorrelationId { get; set; }
+
         public IServiceBus Bus { get; set; }
     }
 
@@ -78,6 +88,7 @@ namespace MassTransit.Persistence.MongoDb.Tests.Sagas
         CorrelatedBy<Guid>
     {
         public int Value { get; set; }
+
         public virtual Guid CorrelationId { get; set; }
     }
 
@@ -87,6 +98,7 @@ namespace MassTransit.Persistence.MongoDb.Tests.Sagas
         public string Name { get; set; }
 
         public int Value { get; set; }
+
         public virtual Guid CorrelationId { get; set; }
     }
 }

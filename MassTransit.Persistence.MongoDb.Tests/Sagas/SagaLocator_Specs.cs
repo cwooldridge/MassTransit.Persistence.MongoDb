@@ -1,13 +1,17 @@
 ﻿namespace MassTransit.Persistence.MongoDb.Tests.Sagas
 {
-    using Magnum.Extensions;
-    using MassTransit.Context;
-    using MassTransit.Saga;
-    using MongoDB.Driver;
-    using NUnit.Framework;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using Magnum.Extensions;
+
+    using MassTransit.Context;
+    using MassTransit.Saga;
+
+    using MongoDB.Driver;
+
+    using NUnit.Framework;
 
     [TestFixture]
     [Category("Integration")]
@@ -19,8 +23,8 @@
             var mongoClient = new MongoClient();
 
             // requires an instance of mongodb running at localhost
-            this._db = mongoClient.GetServer().GetDatabase("MassTransit-SagaTest");
-            this._sagaId = NewId.NextGuid();
+            _db = mongoClient.GetServer().GetDatabase("MassTransit-SagaTest");
+            _sagaId = NewId.NextGuid();
         }
 
         [TearDown]
@@ -28,11 +32,11 @@
         {
         }
 
-        private MongoDatabase _db;
+        MongoDatabase _db;
 
-        private Guid _sagaId;
+        Guid _sagaId;
 
-        private IEnumerable<Action<IConsumeContext<InitiateSimpleSaga>>> GetHandlers(
+        IEnumerable<Action<IConsumeContext<InitiateSimpleSaga>>> GetHandlers(
             TestSaga instance,
             IConsumeContext<InitiateSimpleSaga> context)
         {
@@ -42,20 +46,24 @@
         [Test]
         public void A_correlated_message_should_find_the_correct_saga()
         {
-            var repository = new MongoDbSagaRepository<TestSaga>(this._db);
-            var initiatePolicy = new InitiatingSagaPolicy<TestSaga, InitiateSimpleSaga>(x => x.CorrelationId, x => false);
+            var repository = new MongoDbSagaRepository<TestSaga>(_db);
+            var initiatePolicy =
+                new InitiatingSagaPolicy<TestSaga, InitiateSimpleSaga>(
+                    x => x.CorrelationId,
+                    x => false);
 
-            var message = new InitiateSimpleSaga(this._sagaId);
-            IConsumeContext<InitiateSimpleSaga> context = new ConsumeContext<InitiateSimpleSaga>(ReceiveContext.Empty(), message);
+            var message = new InitiateSimpleSaga(_sagaId);
+            IConsumeContext<InitiateSimpleSaga> context =
+                new ConsumeContext<InitiateSimpleSaga>(ReceiveContext.Empty(), message);
 
-            repository.GetSaga(context, message.CorrelationId, this.GetHandlers, initiatePolicy)
+            repository.GetSaga(context, message.CorrelationId, GetHandlers, initiatePolicy)
                 .Each(x => x(context));
 
-            List<TestSaga> sagas = repository.Where(x => x.CorrelationId == this._sagaId).ToList();
+            List<TestSaga> sagas = repository.Where(x => x.CorrelationId == _sagaId).ToList();
 
             Assert.AreEqual(1, sagas.Count);
             Assert.IsNotNull(sagas[0]);
-            Assert.AreEqual(this._sagaId, sagas[0].CorrelationId);
+            Assert.AreEqual(_sagaId, sagas[0].CorrelationId);
         }
     }
 }

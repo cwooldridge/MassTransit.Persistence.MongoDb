@@ -15,32 +15,33 @@
     {
         static readonly ILog _log = LogManager.GetLogger(typeof(ConcurrentLegacySaga));
 
-
         public ConcurrentLegacySaga(Guid correlationId)
         {
-            this.CorrelationId = correlationId;
+            CorrelationId = correlationId;
 
-            this.Value = -1;
+            Value = -1;
         }
 
         protected ConcurrentLegacySaga()
         {
-            this.Value = -1;
+            Value = -1;
         }
 
         public virtual string Name { get; set; }
+
         public virtual int Value { get; set; }
 
         public virtual void Consume(StartConcurrentSaga message)
         {
             Trace.WriteLine("Consuming " + message.GetType());
             Thread.Sleep(3000);
-            this.Name = message.Name;
-            this.Value = message.Value;
+            Name = message.Name;
+            Value = message.Value;
             Trace.WriteLine("Completed " + message.GetType());
         }
 
         public virtual Guid CorrelationId { get; set; }
+
         public virtual IServiceBus Bus { get; set; }
 
         public virtual void Consume(ContinueConcurrentSaga message)
@@ -48,10 +49,9 @@
             Trace.WriteLine("Consuming " + message.GetType());
             Thread.Sleep(1000);
 
-            if (this.Value == -1)
-                throw new InvalidOperationException("Should not be a -1 dude!!");
+            if (Value == -1) throw new InvalidOperationException("Should not be a -1 dude!!");
 
-            this.Value = message.Value;
+            Value = message.Value;
             Trace.WriteLine("Completed " + message.GetType());
         }
     }
