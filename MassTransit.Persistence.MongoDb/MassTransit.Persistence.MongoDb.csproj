@@ -64,8 +64,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MongoDbStateMachineSagaRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MongoDbSagaRepository.cs" />
+    <Compile Include="StateSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
