@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("CaptiveAire Systems")]
 [assembly: AssemblyProduct("MassTransit.Persistence.MongoDB")]
-[assembly: AssemblyCopyright("Copyright © CaptiveAire Systems 2013")]
+[assembly: AssemblyCopyright("Copyright © CaptiveAire Systems 2013-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

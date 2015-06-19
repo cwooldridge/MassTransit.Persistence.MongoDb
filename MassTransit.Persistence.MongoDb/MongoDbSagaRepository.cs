@@ -11,6 +11,9 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 
+using Magnum.Extensions;
+using Magnum.StateMachine;
+
 namespace MassTransit.Persistence.MongoDb
 {
     using System;
@@ -39,9 +42,11 @@ namespace MassTransit.Persistence.MongoDb
         /// <param name="database"> The database. </param>
         public MongoDbSagaRepository(MongoDatabase database)
         {
+            if (database == null) throw new ArgumentNullException("database");
+
             if (Log == null) Log = Logger.Get(typeof(MongoDbSagaRepository<TSaga>).ToFriendlyName());
 
-            if (database == null) throw new ArgumentNullException("database");
+            _database = database;
 
             if (!BsonClassMap.IsClassMapRegistered(typeof(TSaga)))
             {
@@ -54,8 +59,6 @@ namespace MassTransit.Persistence.MongoDb
                         cm.MapIdProperty(s => s.CorrelationId);
                     });
             }
-
-            _database = database;
         }
 
         /// <summary> Gets the collection. </summary>
@@ -65,7 +68,7 @@ namespace MassTransit.Persistence.MongoDb
             get
             {
                 return _database.GetCollection<TSaga>(
-                    "MassTransitSagaStore." + typeof(TSaga).ToFriendlyName(),
+                    string.Format("MassTransitSagaStore.{0}", typeof(TSaga).ToFriendlyName()),
                     WriteConcern.Acknowledged);
             }
         }

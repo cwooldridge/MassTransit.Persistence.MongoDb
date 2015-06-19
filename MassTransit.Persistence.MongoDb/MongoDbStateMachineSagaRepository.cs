@@ -27,7 +27,7 @@ namespace MassTransit.Persistence.MongoDb
     using MongoDB.Driver;
 
     public class MongoDbStateMachineSagaRepository<TSaga> : MongoDbSagaRepository<TSaga>
-        where TSaga : SagaStateMachine<TSaga>, ISaga, new()
+        where TSaga : SagaStateMachine<TSaga>, ISaga
     {
         /// <summary> Initializes a new instance of the MongoDbSagaRepository class. </summary>
         /// <exception cref="ArgumentNullException"> Thrown when one or more required arguments are null. </exception>
@@ -45,13 +45,9 @@ namespace MassTransit.Persistence.MongoDb
                 });
 
             BsonClassMap.RegisterClassMap<SagaStateMachine<TSaga>>();
-
             if (BsonClassMap.IsClassMapRegistered(typeof(TSaga)))
             {
-                var map =
-                    BsonClassMap.GetRegisteredClassMaps()
-                        .First(c => c.ClassType == typeof(TSaga))
-                        .CastAs<BsonClassMap<TSaga>>();
+                var map = BsonClassMap.GetRegisteredClassMaps().First(c => c.ClassType == typeof(TSaga)).CastAs<BsonClassMap<TSaga>>();
                 map.UnmapProperty(s => s.Bus);
             }
             else
