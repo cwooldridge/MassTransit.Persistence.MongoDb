@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{EEC97B45-9446-4C7A-AF82-FA99E1122319}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -14,9 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.Mon
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extras", "Extras", "{D0FD2101-C689-4848-8FB7-69EAD21F240B}"
 	ProjectSection(SolutionItems) = preProject
+		MassTransit.Persistence.MongoDb.Automatonymous.nuspec = MassTransit.Persistence.MongoDb.Automatonymous.nuspec
 		MassTransit.Persistence.MongoDb.nuspec = MassTransit.Persistence.MongoDb.nuspec
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.MongoDb.Automatonymous", "Masstransit.Automatonymous.Persistence.MongoDb\MassTransit.Persistence.MongoDb.Automatonymous.csproj", "{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +37,10 @@ Global
 		{D785211C-8326-4092-A830-C5DEADDF5576}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D785211C-8326-4092-A830-C5DEADDF5576}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D785211C-8326-4092-A830-C5DEADDF5576}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

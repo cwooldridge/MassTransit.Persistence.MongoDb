@@ -11,30 +11,25 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 // specific language governing permissions and limitations under the License.
 
-using Magnum.Extensions;
-using Magnum.StateMachine;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using MassTransit.Exceptions;
+using MassTransit.Logging;
+using MassTransit.Pipeline;
+using MassTransit.Saga;
+using MassTransit.Util;
+using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace MassTransit.Persistence.MongoDb
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using MassTransit.Exceptions;
-    using MassTransit.Logging;
-    using MassTransit.Pipeline;
-    using MassTransit.Saga;
-    using MassTransit.Util;
-
-    using MongoDB.Bson.Serialization;
-    using MongoDB.Driver;
-    using MongoDB.Driver.Linq;
-
     public class MongoDbSagaRepository<TSaga> : ISagaRepository<TSaga>
         where TSaga : class, ISaga
     {
-        readonly MongoDatabase _database;
-
+        private readonly MongoDatabase _database;
         protected ILog Log;
 
         /// <summary> Initializes a new instance of the MongoDbSagaRepository class. </summary>
@@ -44,11 +39,11 @@ namespace MassTransit.Persistence.MongoDb
         {
             if (database == null) throw new ArgumentNullException("database");
 
-            if (Log == null) Log = Logger.Get(typeof(MongoDbSagaRepository<TSaga>).ToFriendlyName());
+            if (Log == null) Log = Logger.Get(typeof (MongoDbSagaRepository<TSaga>).ToFriendlyName());
 
             _database = database;
 
-            if (!BsonClassMap.IsClassMapRegistered(typeof(TSaga)))
+            if (!BsonClassMap.IsClassMapRegistered(typeof (TSaga)))
             {
                 BsonClassMap.RegisterClassMap<TSaga>(
                     cm =>
@@ -57,6 +52,7 @@ namespace MassTransit.Persistence.MongoDb
                         cm.MapIdField(s => s.CorrelationId);
                         cm.MapIdMember(s => s.CorrelationId);
                         cm.MapIdProperty(s => s.CorrelationId);
+                        cm.UnmapProperty(s => s.Bus);
                     });
             }
         }
@@ -67,9 +63,12 @@ namespace MassTransit.Persistence.MongoDb
         {
             get
             {
-                return _database.GetCollection<TSaga>(
-                    string.Format("MassTransitSagaStore.{0}", typeof(TSaga).ToFriendlyName()),
-                    WriteConcern.Acknowledged);
+                //because queries seem to have a limit of 127 bytes in the ns
+                //we are going to make this collection name a little smaller
+                var collectionName = typeof (TSaga).ToFriendlyName().Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries).Last();
+                var dbName = string.Format("MTSagas.{0}", collectionName);
+
+                return _database.GetCollection<TSaga>(dbName, WriteConcern.Acknowledged);
             }
         }
 
@@ -107,7 +106,7 @@ namespace MassTransit.Persistence.MongoDb
             if (selector == null) throw new ArgumentNullException("selector");
             if (policy == null) throw new ArgumentNullException("policy");
 
-            TSaga instance = Queryable.FirstOrDefault(x => x.CorrelationId == sagaId);
+            var instance = Queryable.FirstOrDefault(x => x.CorrelationId == sagaId);
 
             if (instance == null)
             {
@@ -118,24 +117,25 @@ namespace MassTransit.Persistence.MongoDb
                     {
                         Log.DebugFormat(
                             "SAGA: {0} Ignoring Missing {1} for {2}",
-                            typeof(TSaga).ToFriendlyName(),
+                            typeof (TSaga).ToFriendlyName(),
                             sagaId,
-                            typeof(TMessage).ToFriendlyName());
+                            typeof (TMessage).ToFriendlyName());
                     }
                 }
             }
             else
             {
-                if (policy.CanUseExistingInstance(context)) yield return UseExistingSagaAction(sagaId, selector, policy, instance);
+                if (policy.CanUseExistingInstance(context))
+                    yield return UseExistingSagaAction(sagaId, selector, policy, instance);
                 else
                 {
                     if (Log.IsDebugEnabled)
                     {
                         Log.DebugFormat(
                             "SAGA: {0} Ignoring Existing {1} for {2}",
-                            typeof(TSaga).ToFriendlyName(),
+                            typeof (TSaga).ToFriendlyName(),
                             sagaId,
-                            typeof(TMessage).ToFriendlyName());
+                            typeof (TMessage).ToFriendlyName());
                     }
                 }
             }
@@ -197,7 +197,7 @@ namespace MassTransit.Persistence.MongoDb
         /// <returns>
         ///     The new new saga action&lt; t message&gt;
         /// </returns>
-        Action<IConsumeContext<TMessage>> CreateNewSagaAction<TMessage>(
+        private Action<IConsumeContext<TMessage>> CreateNewSagaAction<TMessage>(
             Guid sagaId,
             InstanceHandlerSelector<TSaga, TMessage> selector,
             ISagaPolicy<TSaga, TMessage> policy)
@@ -209,14 +209,14 @@ namespace MassTransit.Persistence.MongoDb
                 {
                     Log.DebugFormat(
                         "SAGA: {0} Creating New {1} for {2}",
-                        typeof(TSaga).ToFriendlyName(),
+                        typeof (TSaga).ToFriendlyName(),
                         sagaId,
-                        typeof(TMessage).ToFriendlyName());
+                        typeof (TMessage).ToFriendlyName());
                 }
 
                 try
                 {
-                    TSaga instance = policy.CreateInstance(x, sagaId);
+                    var instance = policy.CreateInstance(x, sagaId);
 
                     foreach (var callback in selector(instance, x))
                     {
@@ -230,8 +230,8 @@ namespace MassTransit.Persistence.MongoDb
                 {
                     var sagaException = new SagaException(
                         "Create Saga Instance Exception",
-                        typeof(TSaga),
-                        typeof(TMessage),
+                        typeof (TSaga),
+                        typeof (TMessage),
                         sagaId,
                         ex);
 
@@ -254,7 +254,7 @@ namespace MassTransit.Persistence.MongoDb
         /// <returns>
         ///     .
         /// </returns>
-        Action<IConsumeContext<TMessage>> UseExistingSagaAction<TMessage>(
+        private Action<IConsumeContext<TMessage>> UseExistingSagaAction<TMessage>(
             Guid sagaId,
             InstanceHandlerSelector<TSaga, TMessage> selector,
             ISagaPolicy<TSaga, TMessage> policy,
@@ -267,9 +267,9 @@ namespace MassTransit.Persistence.MongoDb
                 {
                     Log.DebugFormat(
                         "SAGA: {0} Using Existing {1} for {2}",
-                        typeof(TSaga).ToFriendlyName(),
+                        typeof (TSaga).ToFriendlyName(),
                         sagaId,
-                        typeof(TMessage).ToFriendlyName());
+                        typeof (TMessage).ToFriendlyName());
                 }
 
                 try
@@ -291,8 +291,8 @@ namespace MassTransit.Persistence.MongoDb
                 {
                     var sagaException = new SagaException(
                         "Existing Saga Instance Exception",
-                        typeof(TSaga),
-                        typeof(TMessage),
+                        typeof (TSaga),
+                        typeof (TMessage),
                         sagaId,
                         ex);
                     if (Log.IsErrorEnabled) Log.Error(sagaException);

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>MassTransit.Persistence.MongoDb.Automatonymous</id>
+        <version>2.1.0</version>
+        <authors>Jaben Cargman</authors>
+        <owners>CaptiveAire Systems</owners>
+        <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+        <projectUrl>https://github.com/CaptiveAire/MassTransit.Persistence.MongoDb</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>MassTransit Sagas persistence support for NoSQL. Using an Automatonymous state machine</description>
+        <language>en-US</language>
+        <tags>mongodb masstransit automatonymous</tags>
+        <dependencies>
+			<dependency id="Automatonymous" version="1.2.9" />
+			<dependency id="Automatonymous.MassTransit" version="1.2.9"  />
+            <dependency id="MassTransit.Persistence.MongoDb" version="2.1.0" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="MassTransit.Persistence.MongoDb.Automatonymous\bin\Release\MassTransit.Persistence.MongoDb.Automatonymous.dll" target="lib\net40\MassTransit.Persistence.MongoDb.Automatonymous.dll" />
+    </files>
+</package>
