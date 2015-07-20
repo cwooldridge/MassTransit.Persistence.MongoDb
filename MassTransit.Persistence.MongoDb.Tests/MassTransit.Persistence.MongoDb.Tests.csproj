@@ -116,7 +116,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Masstransit.Automatonymous.Persistence.MongoDb\MassTransit.Persistence.MongoDb.Automatonymous.csproj">
+    <ProjectReference Include="..\Masstransit.Persistence.MongoDb.Automatonymous\MassTransit.Persistence.MongoDb.Automatonymous.csproj">
       <Project>{ceceba4f-3b00-4efb-944b-a029228e5fb8}</Project>
       <Name>MassTransit.Persistence.MongoDb.Automatonymous</Name>
     </ProjectReference>

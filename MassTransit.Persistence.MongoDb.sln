@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extras", "Extras", "{D0FD21
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.MongoDb.Automatonymous", "Masstransit.Automatonymous.Persistence.MongoDb\MassTransit.Persistence.MongoDb.Automatonymous.csproj", "{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassTransit.Persistence.MongoDb.Automatonymous", "Masstransit.Persistence.MongoDb.Automatonymous\MassTransit.Persistence.MongoDb.Automatonymous.csproj", "{CECEBA4F-3B00-4EFB-944B-A029228E5FB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
